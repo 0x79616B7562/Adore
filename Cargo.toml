@@ -1,15 +1,20 @@
 [package]
-name = "amber"
+name = "adore"
 edition = "2021"
 version = "0.0.0"
 authors = ["0x79616B7562"]
 license = "MIT"
 resolver = "2"
+description = "Adore: A flexible Rust game dev framework. Bring your own tools for streamlined development."
+readme = "README.md"
+homepage = "https://github.com/0x79616B7562/Adore"
+keywords = ["gamedev", "graphics", "rendering"]
+categories = ["graphics", "game-development", "rendering"]
 
 [dependencies]
-wrld = { git = "https://github.com/0x79616B7562/wrld.git", rev = "ad81269" }
-include-wgsl-oil = { git = "https://github.com/0x79616B7562/include-wgsl-oil.git", rev = "040d540" }
-cast = { git = "https://github.com/0x79616B7562/Cast.git" }
+wrld = { version = "1.0.0", git = "https://github.com/0x79616B7562/wrld.git", rev = "ad81269" }
+include-wgsl-oil = { version = "0.2.5", git = "https://github.com/0x79616B7562/include-wgsl-oil.git", rev = "040d540" }
+cast = { version = "0.1.0", git = "https://github.com/0x79616B7562/Cast.git" }
 
 wgpu = "0.19.1"
 naga = "0.14.2"

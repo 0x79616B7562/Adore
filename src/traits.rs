@@ -3,7 +3,7 @@ use crate::{
     types::Size,
 };
 
-pub trait App {
+pub trait Game {
     fn resize(&mut self, size: Size<u32>);
     fn update(&mut self, game_time: GameTime);
     fn draw(&mut self);

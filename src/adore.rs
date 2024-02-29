@@ -1,6 +1,6 @@
 use crate::{
     time::GameTime,
-    traits::App,
+    traits::Game,
     types::Size,
     window::{
         Window,
@@ -11,12 +11,12 @@ use crate::{
 //
 
 #[derive(Debug, Clone, Copy)]
-pub struct AmberConfig {
+pub struct AdoreConfig {
     pub window_config: WindowConfig,
 }
 
 #[allow(clippy::all)]
-impl Default for AmberConfig {
+impl Default for AdoreConfig {
     fn default() -> Self {
         Self {
             window_config: WindowConfig::default(),
@@ -27,14 +27,14 @@ impl Default for AmberConfig {
 //
 
 #[derive(Debug)]
-pub struct Amber {
+pub struct Adore {
     window: Window,
 
     game_time: GameTime,
 }
 
-impl Amber {
-    pub fn new(config: AmberConfig) -> Self {
+impl Adore {
+    pub fn new(config: AdoreConfig) -> Self {
         let window = Window::new(config.window_config);
 
         crate::gfx::raw::init(&window, window.size());
@@ -46,7 +46,7 @@ impl Amber {
         }
     }
 
-    pub fn run(mut self, mut application: impl App + 'static) {
+    pub fn run(mut self, mut game: impl Game + 'static) {
         let mut old_size = Size::default();
 
         self.window.run(move |size| {
@@ -59,10 +59,10 @@ impl Amber {
                     vsync: false,
                 });
 
-                application.resize(size);
+                game.resize(size);
             }
 
-            application.update(self.game_time);
+            game.update(self.game_time);
 
             crate::gfx::raw::render(|| {
                 {
@@ -72,7 +72,7 @@ impl Amber {
                     }
                 }
 
-                application.draw();
+                game.draw();
             });
 
             self.game_time.update();

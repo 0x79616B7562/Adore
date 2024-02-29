@@ -1,8 +1,8 @@
 use std::path::Path;
 
 struct App {
-    batch: amber::Batch,
-    sprite: amber::Sprite,
+    batch: adore::Batch,
+    sprite: adore::Sprite,
 
     fps: Vec<f32>,
     throttle: f32,
@@ -10,9 +10,9 @@ struct App {
 
 impl App {
     pub fn new() -> Self {
-        let batch = amber::Batch::new();
+        let batch = adore::Batch::new();
 
-        let sprite = amber::Sprite::new(amber::AssetManager::load_texture(Path::new("examples/dev/test.png")).unwrap());
+        let sprite = adore::Sprite::new(adore::AssetManager::load_texture(Path::new("examples/dev/test.png")).unwrap());
 
         Self {
             batch,
@@ -24,13 +24,13 @@ impl App {
     }
 }
 
-impl amber::App for App {
-    fn resize(&mut self, _size: amber::Size<u32>) {
+impl adore::Game for App {
+    fn resize(&mut self, _size: adore::Size<u32>) {
     }
 
-    fn update(&mut self, game_time: amber::GameTime) {
-        if amber::input().key_just_pressed(amber::KeyCode::Escape) {
-            amber::abort();
+    fn update(&mut self, game_time: adore::GameTime) {
+        if adore::input().key_just_pressed(adore::KeyCode::Escape) {
+            adore::abort();
         }
 
         if self.throttle > 0.0 {
@@ -39,7 +39,7 @@ impl amber::App for App {
         } else {
             self.fps.push(1.0 / game_time.delta());
             self.throttle = 1.0;
-            amber::log::trace!(
+            adore::log::trace!(
                 "FPS: {:.2}, TOTAL: {:.2}",
                 self.fps.iter().sum::<f32>() / self.fps.len() as f32,
                 game_time.total()
@@ -47,7 +47,7 @@ impl amber::App for App {
             self.fps.clear();
         }
     }
-    
+
     fn draw(&mut self) {
         self.batch.begin();
 
@@ -65,6 +65,6 @@ impl amber::App for App {
 }
 
 fn main() {
-    amber::logger::init(amber::logger::Filter::default());
-    amber::Amber::new(amber::AmberConfig::default()).run(App::new());
+    adore::logger::init(adore::logger::Filter::default());
+    adore::Adore::new(adore::AdoreConfig::default()).run(App::new());
 }

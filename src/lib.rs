@@ -15,7 +15,7 @@ pub use naga;
 
 //
 
-mod amber;
+mod adore;
 mod api;
 mod assets;
 mod gfx;
@@ -26,7 +26,7 @@ mod traits;
 mod types;
 mod window;
 
-pub use amber::*;
+pub use adore::*;
 pub use api::*;
 pub use assets::*;
 pub use gfx::*;
