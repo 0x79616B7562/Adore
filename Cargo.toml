@@ -11,6 +11,8 @@ homepage = "https://github.com/0x79616B7562/Adore"
 keywords = ["gamedev", "graphics", "rendering"]
 categories = ["graphics", "game-development", "rendering"]
 
+exclude = ["examples/dev"]
+
 [dependencies]
 wrld = { version = "1.0.0", git = "https://github.com/0x79616B7562/wrld.git", rev = "ad81269" }
 include-wgsl-oil = { version = "0.2.5", git = "https://github.com/0x79616B7562/include-wgsl-oil.git", rev = "040d540" }
