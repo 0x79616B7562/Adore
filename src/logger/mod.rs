@@ -28,6 +28,11 @@ impl Filter {
         self.filter.push(filter);
         self
     }
+
+    pub fn clear(mut self) -> Self {
+        self.filter.clear();
+        self
+    }
 }
 
 //

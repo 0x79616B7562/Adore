@@ -50,6 +50,31 @@ pub fn raw() -> &'static mut WinitWindow {
 
 //
 
+#[derive(Debug, Clone, Copy)]
+pub struct WindowConfig {
+    pub title: &'static str,
+    pub width: u32,
+    pub height: u32,
+    pub resizable: bool,
+    pub visible: bool,
+    pub centered: bool,
+}
+
+impl Default for WindowConfig {
+    fn default() -> Self {
+        Self {
+            title: "",
+            width: 1280,
+            height: 720,
+            resizable: true,
+            visible: true,
+            centered: true,
+        }
+    }
+}
+
+//
+
 #[derive(Debug)]
 pub struct Window {
     event_loop: EventLoop<()>,
@@ -75,7 +100,7 @@ impl raw_window_handle::HasWindowHandle for Window {
 }
 
 impl Window {
-    pub fn new(title: &str, width: u32, height: u32, resizable: bool) -> Self {
+    pub fn new(config: WindowConfig) -> Self {
         unsafe {
             INPUT = Some(Input::new());
         }
@@ -83,15 +108,15 @@ impl Window {
         let event_loop = EventLoop::new().unwrap();
 
         let window = WindowBuilder::new()
-            .with_visible(false)
-            .with_title(title)
-            .with_inner_size(PhysicalSize::new(width, height))
-            .with_resizable(resizable)
+            .with_visible(config.visible)
+            .with_title(config.title)
+            .with_inner_size(PhysicalSize::new(config.width, config.height))
+            .with_resizable(config.resizable)
             .build(&event_loop)
             .unwrap();
 
         #[cfg(any(target_os = "windows", target_os = "linux", target_os = "macos"))]
-        {
+        if config.centered {
             if let Some(monitor) = window.current_monitor() {
                 window.set_outer_position(PhysicalPosition::new(
                     monitor.size().width / 2 - window.inner_size().width / 2,

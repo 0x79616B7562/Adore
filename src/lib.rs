@@ -15,9 +15,9 @@ pub use naga;
 
 //
 
+mod amber;
 mod api;
 mod assets;
-mod amber;
 mod gfx;
 pub mod logger;
 mod math;
@@ -26,9 +26,9 @@ mod traits;
 mod types;
 mod window;
 
+pub use amber::*;
 pub use api::*;
 pub use assets::*;
-pub use amber::Amber;
 pub use gfx::*;
 pub use math::*;
 pub use time::*;
@@ -37,6 +37,7 @@ pub use types::*;
 pub use window::{
     KeyCode,
     MouseButton,
+    WindowConfig,
 };
 
 //     ,'``.._   ,'``.

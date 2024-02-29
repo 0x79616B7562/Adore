@@ -2,8 +2,29 @@ use crate::{
     time::GameTime,
     traits::App,
     types::Size,
-    window::Window,
+    window::{
+        Window,
+        WindowConfig,
+    },
 };
+
+//
+
+#[derive(Debug, Clone, Copy)]
+pub struct AmberConfig {
+    pub window_config: WindowConfig,
+}
+
+#[allow(clippy::all)]
+impl Default for AmberConfig {
+    fn default() -> Self {
+        Self {
+            window_config: WindowConfig::default(),
+        }
+    }
+}
+
+//
 
 #[derive(Debug)]
 pub struct Amber {
@@ -12,9 +33,9 @@ pub struct Amber {
     game_time: GameTime,
 }
 
-impl Default for Amber {
-    fn default() -> Self {
-        let window = Window::new("", 1280, 720, true);
+impl Amber {
+    pub fn new(config: AmberConfig) -> Self {
+        let window = Window::new(config.window_config);
 
         crate::gfx::raw::init(&window, window.size());
 
@@ -23,12 +44,6 @@ impl Default for Amber {
 
             game_time: GameTime::new(),
         }
-    }
-}
-
-impl Amber {
-    pub fn new() -> Self {
-        Self::default()
     }
 
     pub fn run(mut self, mut application: impl App + 'static) {

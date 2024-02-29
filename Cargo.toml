@@ -4,14 +4,15 @@ edition = "2021"
 version = "0.0.0"
 authors = ["0x79616B7562"]
 license = "MIT"
+resolver = "2"
 
 [dependencies]
-wrld = { git = "https://github.com/0x79616B7562/wrld.git" }
-include-wgsl-oil = { git = "https://github.com/0x79616B7562/include-wgsl-oil.git" }
+wrld = { git = "https://github.com/0x79616B7562/wrld.git", rev = "ad81269" }
+include-wgsl-oil = { git = "https://github.com/0x79616B7562/include-wgsl-oil.git", rev = "040d540" }
 cast = { git = "https://github.com/0x79616B7562/Cast.git" }
 
 wgpu = "0.19.1"
-naga = { version = "0.14.2", features = ["wgsl-in", "wgsl-out"] }
+naga = "0.14.2"
 raw-window-handle = "0.6.0"
 hashbrown = "0.14.3"
 uuid = { version = "1.7.0", features = ["v4"] }
@@ -27,3 +28,11 @@ num = "0.4.1"
 instant = "0.1.12"
 anyhow = "1.0.80"
 image = "0.24.9"
+
+[profile.dev]
+opt-level = 3
+debug = true
+debug-assertions = true
+overflow-checks = true
+incremental = true
+codegen-units = 256

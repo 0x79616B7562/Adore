@@ -12,7 +12,7 @@ impl App {
     pub fn new() -> Self {
         let batch = amber::Batch::new();
 
-        let sprite = amber::Sprite::new(amber::AssetManager::load_texture(Path::new("crates/ember/examples/dev/test.png")).unwrap());
+        let sprite = amber::Sprite::new(amber::AssetManager::load_texture(Path::new("examples/dev/test.png")).unwrap());
 
         Self {
             batch,
@@ -47,12 +47,12 @@ impl amber::App for App {
             self.fps.clear();
         }
     }
-
+    
     fn draw(&mut self) {
         self.batch.begin();
 
-        for x in 0..100 {
-            for y in 0..100 {
+        for x in 0..10 {
+            for y in 0..10 {
                 self.sprite.target_mut().x = x as f32 * 32.0;
                 self.sprite.target_mut().y = y as f32 * 32.0;
 
@@ -66,5 +66,5 @@ impl amber::App for App {
 
 fn main() {
     amber::logger::init(amber::logger::Filter::default());
-    amber::Amber::new().run(App::new());
+    amber::Amber::new(amber::AmberConfig::default()).run(App::new());
 }

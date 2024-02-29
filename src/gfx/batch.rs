@@ -5,7 +5,7 @@ use crate::{
     Sprite,
 };
 
-#[crate::shader::load_internal("batcher.wgsl")]
+#[crate::shader::load_internal("batch.wgsl")]
 mod shader {}
 
 #[repr(C)]
