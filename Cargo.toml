@@ -12,32 +12,32 @@ keywords = ["gamedev", "graphics", "rendering"]
 categories = ["graphics", "game-development", "rendering"]
 
 [dependencies]
-wrld = { version = "1.0.0", git = "https://github.com/0x79616B7562/wrld.git", rev = "ad81269" }
-include-wgsl-oil = { version = "0.2.5", git = "https://github.com/0x79616B7562/include-wgsl-oil.git", rev = "040d540" }
-cast = { version = "0.1.0", git = "https://github.com/0x79616B7562/Cast.git" }
-
-wgpu = "0.19.1"
-naga = "0.14.2"
-raw-window-handle = "0.6.0"
-hashbrown = "0.14.3"
-uuid = { version = "1.7.0", features = ["v4"] }
-once_cell = "1.19.0"
-pollster = "0.3.0"
-log = "0.4.20"
-glam = "0.25.0"
-winit = "0.29.10"
-memoffset = "0.9.0"
-env_logger = "0.11.1"
-colorize = "0.1.0"
-num = "0.4.1"
-instant = "0.1.12"
-anyhow = "1.0.80"
-image = "0.24.9"
-
-[profile.dev]
-opt-level = 3
-debug = true
-debug-assertions = true
-overflow-checks = true
-incremental = true
-codegen-units = 256
+# include-wgsl-oil = { git = "https://github.com/0x79616B7562/adore_external.git" }
+# wrld = { git = "https://github.com/0x79616B7562/adore_external.git" }
+# cast = { git = "https://github.com/0x79616B7562/adore_external.git" }
+#
+# wgpu = "0.19.1"
+# naga = "0.14.2"
+# raw-window-handle = "0.6.0"
+# hashbrown = "0.14.3"
+# uuid = { version = "1.7.0", features = ["v4"] }
+# once_cell = "1.19.0"
+# pollster = "0.3.0"
+# log = "0.4.20"
+# glam = "0.25.0"
+# winit = "0.29.10"
+# memoffset = "0.9.0"
+# env_logger = "0.11.1"
+# colorize = "0.1.0"
+# num = "0.4.1"
+# instant = "0.1.12"
+# anyhow = "1.0.80"
+# image = "0.24.9"
+#
+# [profile.dev]
+# opt-level = 3
+# debug = true
+# debug-assertions = true
+# overflow-checks = true
+# incremental = true
+# codegen-units = 256
