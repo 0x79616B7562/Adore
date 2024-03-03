@@ -1,6 +1,6 @@
 pub mod bind;
 mod config;
-mod context;
+pub(crate) mod context;
 mod depth;
 mod dynamic_index_buffer;
 mod dynamic_uniform;
@@ -16,6 +16,7 @@ mod vertex_buffer;
 pub use config::*;
 pub use context::{
     device,
+    features,
     format,
     frame,
     init,

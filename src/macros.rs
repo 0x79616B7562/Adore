@@ -6,3 +6,11 @@ macro_rules! ctx {
 		}
 	};
 }
+
+macro_rules! include_str_from_root {
+    ( $x:expr ) => {
+        {
+            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/", $x))
+        }
+    };
+}

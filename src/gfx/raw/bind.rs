@@ -10,6 +10,7 @@ use crate::gfx::raw::{
     ShaderStages,
 };
 
+#[derive(Debug)]
 pub struct Bind {
     pub(crate) bind_group: wgpu::BindGroup,
 }

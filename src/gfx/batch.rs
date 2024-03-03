@@ -5,9 +5,6 @@ use crate::{
     Sprite,
 };
 
-#[crate::shader::load_internal("batch.wgsl")]
-mod shader {}
-
 #[repr(C)]
 #[derive(Debug, Clone, Copy, crate::Desc)]
 struct Vertex {
@@ -27,18 +24,20 @@ pub struct Batch {
 
     camera_uniform: raw::Uniform,
 
-    vb: raw::DynamicVertexBuffer,
-    ib: raw::DynamicIndexBuffer,
+    vb: Vec<raw::VertexBuffer>,
+    ib: Vec<raw::IndexBuffer>,
 
     vertex: Vec<Vertex>,
     index: Vec<u32>,
     index_offset: u32,
+
+    current_texture: *const Sprite,
 }
 
 impl Default for Batch {
     fn default() -> Self {
         let pipeline = raw::Pipeline::new(&raw::PipelineConfig {
-            shader_source: shader::SOURCE,
+            shader_source: include_str_from_root!("shaders/batch.wgsl"),
             vertex_buffer_layouts: &[Vertex::desc()],
             bind_group_layouts: &[
                 &raw::Texture::bind_group_layout(),
@@ -51,14 +50,9 @@ impl Default for Batch {
         let proj = glam::Mat4::orthographic_rh(0.0, 1280.0, 0.0, 720.0, 0.0, 1.0);
 
         let camera_uniform = raw::Uniform::new(
-            cast::cast(&[shader::types::Camera {
-                view_proj: proj * view,
-            }]),
+            crate::cast(&(proj * view).to_cols_array()),
             raw::ShaderStages::Vertex,
         );
-
-        let vb = raw::DynamicVertexBuffer::new(&[]);
-        let ib = raw::DynamicIndexBuffer::new(&[], raw::IndexFormat::Uint32, 0);
 
         Self {
             pipeline,
@@ -66,12 +60,14 @@ impl Default for Batch {
 
             camera_uniform,
 
-            vb,
-            ib,
+            vb: vec![],
+            ib: vec![],
 
             vertex: vec![],
             index: vec![],
             index_offset: 0,
+
+            current_texture: std::ptr::null(),
         }
     }
 }
@@ -89,6 +85,9 @@ impl Batch {
         }
 
         if let Some(frame) = raw::frame() {
+            self.vb.clear();
+            self.ib.clear();
+
             self.rp = Some(frame.create_render_pass(false));
         } else {
             log::error!("Frame is None");
@@ -107,17 +106,26 @@ impl Batch {
             return;
         }
 
+        self.draw_call();
+
+        _ = self.rp.take();
+        self.current_texture = std::ptr::null();
+    }
+
+    fn draw_call(&mut self) {
         self.rp.as_mut().unwrap().set_pipeline(&self.pipeline);
         self.rp.as_mut().unwrap().set_uniform(1, &self.camera_uniform);
 
-        self.vb.set(cast::cast(&self.vertex));
-        self.ib.set(cast::cast(&self.index), self.index.len());
+        let vb = raw::VertexBuffer::new(crate::cast(&self.vertex));
+        let ib = raw::IndexBuffer::new(crate::cast(&self.index), raw::IndexFormat::Uint32, self.index.len());
 
-        self.rp.as_mut().unwrap().set_dynamic_vertex_buffer(0, &self.vb);
-        self.rp.as_mut().unwrap().set_dynamic_index_buffer(&self.ib);
-        self.rp.as_mut().unwrap().draw_indexed(0..self.ib.len(), 0, 0..1);
+        self.rp.as_mut().unwrap().set_vertex_buffer(0, &vb);
+        self.rp.as_mut().unwrap().set_index_buffer(&ib);
+        self.rp.as_mut().unwrap().draw_indexed(0..ib.len(), 0, 0..1);
 
-        _ = self.rp.take();
+        self.vb.push(vb);
+        self.ib.push(ib);
+
         self.vertex.clear();
         self.index.clear();
         self.index_offset = 0;
@@ -161,8 +169,16 @@ impl Batch {
     }
 
     pub fn draw_sprite(&mut self, sprite: &Sprite) {
-        self.add_quad(sprite.target(), sprite.color());
+        if self.current_texture != sprite as _ {
+            if !self.current_texture.is_null() {
+                self.draw_call();
+            }
 
-        self.rp.as_mut().unwrap().set_texture(0, sprite.texture().raw());
+            self.current_texture = sprite as _;
+        
+            self.rp.as_mut().unwrap().set_texture(0, sprite.texture().raw());
+        }
+
+        self.add_quad(sprite.target(), sprite.color());
     }
 }

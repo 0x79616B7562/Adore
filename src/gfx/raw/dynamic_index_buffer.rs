@@ -2,6 +2,7 @@ use wgpu::util::DeviceExt;
 
 use crate::gfx::raw::IndexFormat;
 
+#[derive(Debug)]
 pub struct DynamicIndexBuffer {
     pub(crate) buffer: wgpu::Buffer,
     pub(crate) format: wgpu::IndexFormat,

@@ -1,5 +1,6 @@
 use wgpu::util::DeviceExt;
 
+#[derive(Debug)]
 pub struct VertexBuffer {
     pub(crate) buffer: wgpu::Buffer,
 }

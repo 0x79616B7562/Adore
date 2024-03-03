@@ -11,6 +11,15 @@ use crate::gfx::raw::{
     VertexBuffer,
 };
 
+//
+
+#[inline(always)]
+fn extend_lifetime<'a ,T>(t: *const T) -> &'a T {
+    unsafe { &*t }
+}
+
+//
+
 #[derive(Debug)]
 pub struct RenderPass<'a> {
     pub render_pass: wgpu::RenderPass<'a>,
@@ -25,83 +34,51 @@ impl<'a> RenderPass<'a> {
 
     #[inline]
     pub fn set_pipeline(&mut self, pipeline: &Pipeline) {
-        let mut inner = |pipeline: *const Pipeline| unsafe {
-            self.render_pass.set_pipeline(&(*pipeline).pipeline);
-        };
-
-        inner(pipeline);
+        self.render_pass.set_pipeline(extend_lifetime(&pipeline.pipeline));
     }
 
     #[inline]
     pub fn set_texture(&mut self, index: u32, texture: &Texture) {
-        let mut inner = |index: u32, texture: *const Texture| unsafe {
-            self.render_pass.set_bind_group(index, &(*texture).bind_group, &[]);
-        };
-
-        inner(index, texture);
+        self.render_pass.set_bind_group(index, extend_lifetime(&texture.bind_group), &[]);
     }
 
     #[inline]
     pub fn set_uniform(&mut self, index: u32, uniform: &Uniform) {
-        let mut inner = |index: u32, uniform: *const Uniform| unsafe {
-            self.render_pass.set_bind_group(index, &(*uniform).bind_group.bind_group, &[]);
-        };
-
-        inner(index, uniform);
+        self.render_pass.set_bind_group(index, extend_lifetime(&uniform.bind_group.bind_group), &[]);
     }
 
     #[inline]
     pub fn set_dynamic_uniform(&mut self, index: u32, uniform: &DynamicUniform) {
-        let mut inner = |index: u32, uniform: *const DynamicUniform| unsafe {
-            self.render_pass
-                .set_bind_group(index, &(*uniform).bind_groups.last().unwrap().bind_group, &[(*uniform).offset_of(
-                    if (*uniform).offset() == 0 {
-                        0
-                    } else {
-                        (*uniform).offset() - 1
-                    },
-                )]);
-        };
-
-        inner(index, uniform);
+        self.render_pass
+            .set_bind_group(index, extend_lifetime(&uniform.bind_groups.last().unwrap().bind_group), &[uniform.offset_of(
+                if uniform.offset() == 0 {
+                    0
+                } else {
+                    uniform.offset() - 1
+                },
+            )]);
     }
 
     #[inline]
     pub fn set_vertex_buffer(&mut self, index: u32, vertex_buffer: &VertexBuffer) {
-        let mut inner = |index: u32, vertex_buffer: *const VertexBuffer| unsafe {
-            self.render_pass.set_vertex_buffer(index, (*vertex_buffer).buffer.slice(..));
-        };
-
-        inner(index, vertex_buffer);
+        self.render_pass.set_vertex_buffer(index, extend_lifetime(vertex_buffer).buffer.slice(..));
     }
 
     #[inline]
     pub fn set_index_buffer(&mut self, index_buffer: &IndexBuffer) {
-        let mut inner = |index_buffer: *const IndexBuffer| unsafe {
-            self.render_pass
-                .set_index_buffer((*index_buffer).buffer.slice(..), (*index_buffer).format);
-        };
-
-        inner(index_buffer);
+        self.render_pass
+            .set_index_buffer(extend_lifetime(index_buffer).buffer.slice(..), index_buffer.format);
     }
 
     #[inline]
     pub fn set_dynamic_vertex_buffer(&mut self, index: u32, vertex_buffer: &DynamicVertexBuffer) {
-        let mut inner = |index: u32, vertex_buffer: *const DynamicVertexBuffer| unsafe {
-            self.render_pass.set_vertex_buffer(index, (*vertex_buffer).buffer.slice(..));
-        };
-
-        inner(index, vertex_buffer);
+        self.render_pass.set_vertex_buffer(index, extend_lifetime(vertex_buffer).buffer.slice(..));
     }
 
     #[inline]
     pub fn set_dynamic_index_buffer(&mut self, index_buffer: &DynamicIndexBuffer) {
-        let mut inner = |index_buffer: *const DynamicIndexBuffer| unsafe {
-            self.render_pass
-                .set_index_buffer((*index_buffer).buffer.slice(..), (*index_buffer).format);
-        };
-
-        inner(index_buffer);
+        self.render_pass
+            .set_index_buffer(extend_lifetime(index_buffer).buffer.slice(..), index_buffer.format);
     }
 
     #[inline]

@@ -43,8 +43,14 @@ where T: FnMut() {
 
 #[allow(dead_code)]
 #[inline]
-pub fn device_limits() -> wgpu::Limits {
+pub fn limits() -> wgpu::Limits {
     ctx!().device.limits()
+}
+
+#[allow(dead_code)]
+#[inline]
+pub fn features() -> wgpu::Features {
+    ctx!().device.features()
 }
 
 #[allow(dead_code)]
@@ -130,10 +136,14 @@ impl Context {
             .await
             .unwrap();
 
+        let features = wgpu::Features::empty();
+        log::trace!("Requested features: {:?}", features);
+        let features = Context::request_features(&adapter, features);
+
         let (device, queue) = adapter
             .request_device(
                 &wgpu::DeviceDescriptor {
-                    required_features: wgpu::Features::empty(),
+                    required_features: features,
                     required_limits: if cfg!(target_arch = "wasm32") {
                         wgpu::Limits::downlevel_webgl2_defaults()
                     } else {
@@ -145,6 +155,8 @@ impl Context {
             )
             .await
             .unwrap();
+
+        log::trace!("Supported features: {:?}", features);
 
         let surface_caps = surface.get_capabilities(&adapter);
 
@@ -168,7 +180,7 @@ impl Context {
 
         surface.configure(&device, &config);
 
-        log::debug!("Renderer: {:?}", adapter.get_info().backend);
+        log::trace!("Backend: {:?}", adapter.get_info().backend);
 
         let depth_texture = Depth::create_depth_texture(&device, &config, "depth");
 
@@ -181,6 +193,18 @@ impl Context {
             depth_texture,
             frame: None,
         }
+    }
+
+    fn request_features(adapter: &wgpu::Adapter, features: wgpu::Features) -> wgpu::Features {
+        let mut out = wgpu::Features::empty();
+
+        for feature in features.iter() {
+            if adapter.features().contains(feature) {
+                out |= feature;
+            }
+        }
+
+        out
     }
 
     pub fn reset(&mut self, config: ContextConfig) {
