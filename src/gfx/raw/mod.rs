@@ -1,5 +1,9 @@
+pub use wgpu;
+
+//
+
 pub mod bind;
-mod config;
+pub mod config;
 pub(crate) mod context;
 mod depth;
 mod dynamic_index_buffer;

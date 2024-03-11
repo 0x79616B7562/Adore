@@ -8,6 +8,7 @@ pub use memoffset::{
 mod cast;
 mod color;
 mod delta;
+pub mod errors;
 mod position;
 mod rectangle;
 mod size;

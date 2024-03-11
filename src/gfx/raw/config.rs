@@ -1,4 +1,5 @@
 pub type HasDynamicOffset = bool;
+pub type Order = u32;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub enum StepMode {
@@ -214,10 +215,10 @@ pub enum LoadOp {
     Load,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct PipelineConfig<'a> {
     pub shader_source: &'a str,
     pub vertex_buffer_layouts: &'a [wgpu::VertexBufferLayout<'a>],
-    pub bind_group_layouts: &'a [&'a wgpu::BindGroupLayout],
+    pub bind_group_layouts: &'a [(Order, &'a wgpu::BindGroupLayout)],
     pub depth_stencil_write_enabled: bool,
 }

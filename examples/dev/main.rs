@@ -14,8 +14,8 @@ impl App {
     pub fn new() -> Self {
         let batch = adore::Batch::new();
 
-        let sprite = adore::Sprite::new(adore::AssetManager::load_texture(Path::new("examples/dev/test.png")).unwrap());
-        let sprite0 = adore::Sprite::new(adore::AssetManager::load_texture(Path::new("examples/dev/dev.png")).unwrap());
+        let sprite = adore::Sprite::new(adore::load_texture(Path::new("examples/dev/test.png")).unwrap());
+        let sprite0 = adore::Sprite::new(adore::load_texture(Path::new("examples/dev/dev.png")).unwrap());
 
         Self {
             batch,
@@ -56,29 +56,11 @@ impl adore::Game for App {
     }
 
     fn draw(&mut self) {
-        self.batch.begin();
+        self.batch.begin().unwrap();
 
-        // self.sprite0.target_mut().x = 100.0;
-        // for y in 0..10 {
-        //     self.sprite0.target_mut().y = y as f32 * self.sprite0.target().height;
-        //     self.batch.draw_sprite(&self.sprite0);
-        // }
-
-        // self.batch.draw_sprite(&self.sprite);
-
-        // self.batch.draw_sprite(&self.sprite0);
-        // self.batch.draw_sprite(&self.sprite);
-
-        // for x in 0..10 {
-        //     self.sprite.target_mut().x = x as f32 * self.sprite.target().width / 2.;
-        //     self.sprite.target_mut().y = x as f32 * self.sprite.target().height / 2.;
-        //     self.sprite0.set_target(self.sprite.target());
-
-        //     self.batch.draw_sprite(&self.sprite);
-        // }
-
+        #[allow(clippy::all)]
         for x in 0..32 {
-            for y in 0..20 {
+            for y in 0..10 {
                 if x % 2 == 1 {
                     if y % 2 == 0 {
                         self.sprite.target_mut().x = x as f32 * self.sprite.target().width;
@@ -103,7 +85,7 @@ impl adore::Game for App {
             }
         }
 
-        self.batch.end();
+        self.batch.end().unwrap();
     }
 }
 

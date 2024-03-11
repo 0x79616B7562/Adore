@@ -1,6 +1,5 @@
 use hashbrown::HashMap;
 use once_cell::sync::Lazy;
-use uuid::Uuid;
 
 use crate::gfx::raw::{
     bind::{
@@ -17,7 +16,7 @@ use crate::gfx::raw::{
 //
 
 #[allow(clippy::all)]
-static mut DYNAMIC_UNIFORMS_RESET_QUEUE: Lazy<HashMap<u128, *mut DynamicUniform>> = Lazy::new(|| HashMap::new());
+static mut DYNAMIC_UNIFORMS_RESET_QUEUE: Lazy<HashMap<wgpu::Id<wgpu::Buffer>, *mut DynamicUniform>> = Lazy::new(|| HashMap::new());
 
 pub(crate) fn reset_dynamic_uniforms() {
     unsafe {
@@ -36,8 +35,6 @@ pub(crate) fn reset_dynamic_uniforms() {
 //
 
 pub struct DynamicUniform {
-    uuid: u128,
-
     pub(crate) buffer: wgpu::Buffer,
     pub(crate) bind_groups: Vec<Bind>,
 
@@ -52,8 +49,8 @@ pub struct DynamicUniform {
 impl Drop for DynamicUniform {
     fn drop(&mut self) {
         unsafe {
-            if DYNAMIC_UNIFORMS_RESET_QUEUE.contains_key(&self.uuid) {
-                DYNAMIC_UNIFORMS_RESET_QUEUE.remove(&self.uuid);
+            if DYNAMIC_UNIFORMS_RESET_QUEUE.contains_key(&self.buffer.global_id()) {
+                DYNAMIC_UNIFORMS_RESET_QUEUE.remove(&self.buffer.global_id());
             }
         }
     }
@@ -83,8 +80,6 @@ impl DynamicUniform {
         }]);
 
         Self {
-            uuid: Uuid::new_v4().as_u128(),
-
             buffer,
             bind_groups: vec![bind_group],
 
@@ -180,8 +175,8 @@ impl DynamicUniform {
         self.desired_length += 1;
 
         unsafe {
-            if !DYNAMIC_UNIFORMS_RESET_QUEUE.contains_key(&self.uuid) {
-                DYNAMIC_UNIFORMS_RESET_QUEUE.insert(self.uuid, self);
+            if !DYNAMIC_UNIFORMS_RESET_QUEUE.contains_key(&self.buffer.global_id()) {
+                DYNAMIC_UNIFORMS_RESET_QUEUE.insert(self.buffer.global_id(), self);
             }
         }
     }

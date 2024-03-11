@@ -1,23 +1,25 @@
+use std::rc::Rc;
+
 use crate::{
+    raw,
     Color,
     Rectangle,
-    Texture,
 };
 
 #[derive(Debug)]
 pub struct Sprite {
-    texture: Texture,
+    texture: Rc<raw::Texture>,
 
     target: Rectangle<f32>,
     color: Color<f32>,
 }
 
 impl Sprite {
-    pub fn new(texture: Texture) -> Self {
-        let target = Rectangle::new(0.0, 0.0, texture.width() as f32, texture.height() as f32);
+    pub fn new(texture: raw::Texture) -> Self {
+        let target = Rectangle::new(0.0, 0.0, texture.dimensions.0 as f32, texture.dimensions.1 as f32);
 
         Self {
-            texture,
+            texture: Rc::new(texture),
 
             target,
             color: Color::default(),
@@ -25,14 +27,18 @@ impl Sprite {
     }
 
     pub fn width(&self) -> u32 {
-        self.texture.width()
+        self.texture.dimensions.0
     }
 
     pub fn height(&self) -> u32 {
-        self.texture.height()
+        self.texture.dimensions.1
     }
 
-    pub fn texture(&self) -> &Texture {
+    pub(crate) fn clone_texture_rc(&self) -> Rc<raw::Texture> {
+        Rc::clone(&self.texture)
+    }
+
+    pub fn texture(&self) -> &raw::Texture {
         &self.texture
     }
 
