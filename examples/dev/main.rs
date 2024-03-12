@@ -30,7 +30,8 @@ impl App {
 }
 
 impl adore::Game for App {
-    fn resize(&mut self, _size: adore::Size<u32>) {
+    fn resize(&mut self, size: adore::Size<u32>) {
+        self.batch.resize(size);
     }
 
     fn update(&mut self, game_time: adore::GameTime) {
@@ -55,7 +56,7 @@ impl adore::Game for App {
         }
     }
 
-    fn draw(&mut self) {
+    fn draw(&mut self, _game_time: adore::GameTime) {
         self.batch.begin().unwrap();
 
         #[allow(clippy::all)]

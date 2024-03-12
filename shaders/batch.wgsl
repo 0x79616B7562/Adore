@@ -28,10 +28,9 @@ fn vs_main(
     return out;
 }
 
-@group(1) @binding(0) var texture: texture_2d<f32>;
-@group(1) @binding(1) var texture_sampler: sampler;
+#include_bind_groups
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-    return textureSample(texture, texture_sampler, in.texcoord) * in.color;
+    #include_returns
 }

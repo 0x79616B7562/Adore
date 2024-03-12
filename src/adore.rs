@@ -72,7 +72,7 @@ impl Adore {
                     }
                 }
 
-                game.draw();
+                game.draw(self.game_time);
             });
 
             self.game_time.update();
