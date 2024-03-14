@@ -156,4 +156,8 @@ impl Texture {
             label: Some("Texture Bind Group Layout"),
         })
     }
+
+    pub fn id(&self) -> wgpu::Id<wgpu::BindGroup> {
+        self.bind_group.global_id()
+    }
 }

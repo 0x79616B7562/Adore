@@ -7,6 +7,14 @@ macro_rules! ctx {
 	};
 }
 
+macro_rules! include_bytes_from_root {
+    ( $x:expr ) => {
+        {
+            include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/", $x))
+        }
+    };
+}
+
 macro_rules! include_str_from_root {
     ( $x:expr ) => {
         {

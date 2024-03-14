@@ -16,8 +16,11 @@ include = [
     "README.md",
     "LICENSE",
     "/src",
-    "/shaders"
+    "/res"
 ]
+
+[profile.dev]
+opt-level = 1
 
 [dependencies]
 wrld = "1.0.0"

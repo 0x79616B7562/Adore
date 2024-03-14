@@ -215,10 +215,10 @@ pub enum LoadOp {
     Load,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct PipelineConfig<'a> {
     pub shader_source: &'a str,
     pub vertex_buffer_layouts: &'a [wgpu::VertexBufferLayout<'a>],
-    pub bind_group_layouts: &'a [(Order, &'a wgpu::BindGroupLayout)],
+    pub bind_group_layouts: Vec<(Order, wgpu::BindGroupLayout)>,
     pub depth_stencil_write_enabled: bool,
 }

@@ -9,19 +9,19 @@ pub struct Pipeline {
 }
 
 impl Pipeline {
-    pub fn new(config: &PipelineConfig) -> Self {
+    pub fn new(config: PipelineConfig) -> Self {
         let shader = ctx!().device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
             source: wgpu::ShaderSource::Wgsl(config.shader_source.into()),
         });
 
-        let mut layouts = config.bind_group_layouts.to_vec();
+        let mut layouts = config.bind_group_layouts;
         layouts.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
-        let layouts = layouts.iter().map(|ol| ol.1).collect::<Vec<_>>();
+        let layouts_ref = layouts.iter().map(|ol| &ol.1).collect::<Vec<_>>();
 
         let render_pipeline_layout = ctx!().device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: Some("Render Pipeline Layout"),
-            bind_group_layouts: &layouts,
+            bind_group_layouts: &layouts_ref,
             push_constant_ranges: &[],
         });
 

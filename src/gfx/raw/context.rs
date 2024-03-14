@@ -136,7 +136,7 @@ impl Context {
             .await
             .unwrap();
 
-        let features = wgpu::Features::empty();
+        let features = wgpu::Features::TEXTURE_BINDING_ARRAY;
         log::trace!("Requested features: {:?}", features);
         let features = Context::request_features(&adapter, features);
 
