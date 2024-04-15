@@ -11,7 +11,7 @@ pub struct Filter {
 impl Default for Filter {
     fn default() -> Self {
         Self {
-            filter: vec!["wgpu_core", "wgpu_hal", "naga", "calloop"],
+            filter: vec!["wgpu_core", "wgpu_hal", "naga", "calloop", "winit"],
         }
     }
 }

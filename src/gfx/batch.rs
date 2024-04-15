@@ -66,25 +66,12 @@ pub struct Batch {
 
     is_drawing: bool,
     capacity: u32,
-    native: bool,
     blank_texture: raw::Texture,
 }
 
 impl Default for Batch {
     fn default() -> Self {
-        let native = raw::device().features().contains(
-            wgpu::Features::TEXTURE_BINDING_ARRAY | wgpu::Features::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
-        );
-        let native = false;
-
-        log::debug!("Native Batch: {:?}", native);
-
-        let capacity = if !native {
-            raw::device().limits().max_bind_groups - 1
-        } else {
-            const MAX_CAPCITY: u32 = 1024;
-            MAX_CAPCITY
-        };
+        let capacity = raw::device().limits().max_bind_groups - 1;
 
         log::debug!("Batch Texture Capacity: {:?}", capacity);
 
@@ -92,21 +79,13 @@ impl Default for Batch {
 
         let mut bind_group_layouts = vec![(0, raw::Uniform::bind_group_layout(raw::ShaderStages::Vertex))];
 
-        if !native {
-            for i in 1..capacity + 1 {
-                bind_group_layouts.push((i, raw::Texture::bind_group_layout()));
-            }
-        } else {
-            bind_group_layouts.push((1, raw::Texture::bind_group_layout()));
+        for i in 1..capacity + 1 {
+            bind_group_layouts.push((i, raw::Texture::bind_group_layout()));
         }
 
         //
 
-        let shader_source = if native {
-            include_str_from_root!("res/shaders/batch.wgsl")
-                .to_string()
-                .replace("#capacity", capacity.to_string().as_str())
-        } else {
+        let shader_source = {
             let mut bg = String::new();
             for i in 0..capacity {
                 let index = i + 1;
@@ -171,7 +150,6 @@ out = textureSample(texture_{i}, texture_sampler_{i}, in.texcoord) * in.color;
 
             is_drawing: false,
             capacity,
-            native,
             blank_texture,
         }
     }
@@ -231,15 +209,11 @@ impl Batch {
                         draw_call.index.len(),
                     ));
 
-                    if !self.native {
-                        for i in 0..self.capacity {
-                            rp.set_texture(i + 1, match draw_call.textures.get(i as usize) {
-                                Some(texture) => texture,
-                                None => &self.blank_texture,
-                            });
-                        }
-                    } else {
-                        for texture in draw_call.textures.iter() {}
+                    for i in 0..self.capacity {
+                        rp.set_texture(i + 1, match draw_call.textures.get(i as usize) {
+                            Some(texture) => texture,
+                            None => &self.blank_texture,
+                        });
                     }
 
                     rp.set_vertex_buffer(0, draw_call.vb.as_ref().unwrap());
