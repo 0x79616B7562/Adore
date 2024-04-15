@@ -8,6 +8,7 @@ use crate::gfx::raw::{
 
 #[derive(Debug)]
 pub struct Texture {
+    pub(crate) texture_view: wgpu::TextureView,
     pub(crate) bind_group: wgpu::BindGroup,
     pub(crate) dimensions: (u32, u32),
 }
@@ -126,6 +127,7 @@ impl Texture {
         });
 
         Self {
+            texture_view,
             bind_group,
             dimensions,
         }

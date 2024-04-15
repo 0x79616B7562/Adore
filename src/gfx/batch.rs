@@ -66,55 +66,83 @@ pub struct Batch {
 
     is_drawing: bool,
     capacity: u32,
+    native: bool,
     blank_texture: raw::Texture,
 }
 
 impl Default for Batch {
     fn default() -> Self {
-        let supported_bind_groups = raw::device().limits().max_bind_groups - 1;
+        let native = raw::device().features().contains(
+            wgpu::Features::TEXTURE_BINDING_ARRAY | wgpu::Features::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
+        );
+        let native = false;
 
-        let mut bg = String::new();
-        for i in 0..supported_bind_groups {
-            let index = i + 1;
-            bg += format!(
-                r#"
-@group({index}) @binding(0) var texture_{i}: texture_2d<f32>;
-@group({index}) @binding(1) var texture_sampler_{i}: sampler;
-                "#
-            )
-            .as_str();
-        }
-        bg += "\n";
+        log::debug!("Native Batch: {:?}", native);
 
-        let mut rets = String::new();
-        for i in 0..supported_bind_groups {
-            rets += format!(
-                r#"
-if (in.texture_index == {i}) {{
-    out = textureSample(texture_{i}, texture_sampler_{i}, in.texcoord) * in.color;
-}}
-            "#
-            )
-            .as_str();
-        }
-        rets += "\n";
+        let capacity = if !native {
+            raw::device().limits().max_bind_groups - 1
+        } else {
+            const MAX_CAPCITY: u32 = 1024;
+            MAX_CAPCITY
+        };
 
-        let shader_source = include_str_from_root!("res/shaders/batch_compatibility.wgsl").to_string();
-        let shader_source = shader_source.replace("#include_body", rets.as_str());
-        let shader_source = shader_source.replace("#include_bind_groups", bg.as_str());
-        let shader_source = shader_source.as_str();
+        log::debug!("Batch Texture Capacity: {:?}", capacity);
 
         //
 
         let mut bind_group_layouts = vec![(0, raw::Uniform::bind_group_layout(raw::ShaderStages::Vertex))];
-        for i in 1..supported_bind_groups + 1 {
-            bind_group_layouts.push((i, raw::Texture::bind_group_layout()));
+
+        if !native {
+            for i in 1..capacity + 1 {
+                bind_group_layouts.push((i, raw::Texture::bind_group_layout()));
+            }
+        } else {
+            bind_group_layouts.push((1, raw::Texture::bind_group_layout()));
         }
 
         //
 
+        let shader_source = if native {
+            include_str_from_root!("res/shaders/batch.wgsl")
+                .to_string()
+                .replace("#capacity", capacity.to_string().as_str())
+        } else {
+            let mut bg = String::new();
+            for i in 0..capacity {
+                let index = i + 1;
+                bg += format!(
+                    r#"
+@group({index}) @binding(0) var texture_{i}: texture_2d<f32>;
+@group({index}) @binding(1) var texture_sampler_{i}: sampler;
+                    "#
+                )
+                .as_str();
+            }
+            bg += "\n";
+
+            let mut rets = String::new();
+            for i in 0..capacity {
+                rets += format!(
+                    r#"
+if (in.texture_index == {i}) {{
+out = textureSample(texture_{i}, texture_sampler_{i}, in.texcoord) * in.color;
+}}
+                "#
+                )
+                .as_str();
+            }
+            rets += "\n";
+
+            let shader_source = include_str_from_root!("res/shaders/batch_compatibility.wgsl").to_string();
+            let shader_source = shader_source.replace("#include_body", rets.as_str());
+            let shader_source = shader_source.replace("#include_bind_groups", bg.as_str());
+            shader_source
+        };
+
+        //
+
         let pipeline = raw::Pipeline::new(raw::PipelineConfig {
-            shader_source,
+            shader_source: shader_source.as_str(),
             vertex_buffer_layouts: &[Vertex::desc()],
             bind_group_layouts,
             depth_stencil_write_enabled: false,
@@ -142,7 +170,8 @@ if (in.texture_index == {i}) {{
             draw_calls: vec![],
 
             is_drawing: false,
-            capacity: supported_bind_groups,
+            capacity,
+            native,
             blank_texture,
         }
     }
@@ -202,11 +231,15 @@ impl Batch {
                         draw_call.index.len(),
                     ));
 
-                    for i in 0..self.capacity {
-                        rp.set_texture(i + 1, match draw_call.textures.get(i as usize) {
-                            Some(texture) => texture,
-                            None => &self.blank_texture,
-                        });
+                    if !self.native {
+                        for i in 0..self.capacity {
+                            rp.set_texture(i + 1, match draw_call.textures.get(i as usize) {
+                                Some(texture) => texture,
+                                None => &self.blank_texture,
+                            });
+                        }
+                    } else {
+                        for texture in draw_call.textures.iter() {}
                     }
 
                     rp.set_vertex_buffer(0, draw_call.vb.as_ref().unwrap());
@@ -301,15 +334,6 @@ impl Batch {
         self.draw_calls.len()
     }
 }
-
-//
-//
-//
-//
-//
-
-// I like little prince, its great metaphor on how life is with various people/challenges you can meet in your life.
-// At least its how I understand that book.
 
 //                                ,;.
 //                              .;  `'-;.-

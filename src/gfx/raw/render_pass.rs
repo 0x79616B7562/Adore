@@ -25,6 +25,7 @@ pub struct RenderPass<'a> {
     pub render_pass: wgpu::RenderPass<'a>,
 }
 
+#[allow(dead_code)]
 impl<'a> RenderPass<'a> {
     pub fn new(render_pass: wgpu::RenderPass<'a>) -> Self {
         Self {

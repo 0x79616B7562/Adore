@@ -1,8 +1,8 @@
 struct App {
     batch: adore::Batch,
 
-    // sprite: adore::Sprite,
-    // sprite0: adore::Sprite,
+    sprite: adore::Sprite,
+    sprite0: adore::Sprite,
     sprites: Vec<adore::Sprite>,
 
     fps: Vec<f32>,
@@ -13,8 +13,8 @@ impl App {
     pub fn new() -> Self {
         let batch = adore::Batch::new();
 
-        // let sprite = adore::Sprite::new(adore::load_texture_from_bytes(include_bytes!("dev.png")).unwrap());
-        // let sprite0 = adore::Sprite::new(adore::load_texture_from_bytes(include_bytes!("test.png")).unwrap());
+        let sprite = adore::Sprite::new(adore::load_texture_from_bytes(include_bytes!("dev.png")).unwrap());
+        let sprite0 = adore::Sprite::new(adore::load_texture_from_bytes(include_bytes!("test.png")).unwrap());
 
         let sprite1 = adore::Sprite::new(adore::load_texture_from_bytes(include_bytes!("1.png")).unwrap());
         let sprite2 = adore::Sprite::new(adore::load_texture_from_bytes(include_bytes!("2.png")).unwrap());
@@ -35,8 +35,8 @@ impl App {
         Self {
             batch,
 
-            // sprite,
-            // sprite0,
+            sprite,
+            sprite0,
             sprites: vec![
                 sprite1, sprite2, sprite3, sprite4, sprite5, sprite6, sprite7, sprite8, sprite9, sprite10, sprite11, sprite12, sprite13,
                 sprite14, sprite15,
@@ -79,40 +79,40 @@ impl adore::Game for App {
     fn draw(&mut self, _game_time: adore::GameTime) {
         self.batch.begin().unwrap();
 
-        for (index, sprite) in self.sprites.iter_mut().enumerate() {
-            for i in 0..2 {
-                sprite.target_mut().x = (index + i) as f32 * sprite.target().width;
-                sprite.target_mut().y = index as f32 * sprite.target().height;
-                self.batch.draw_sprite(sprite);
-            }
-        }
-
-        // #[allow(clippy::all)]
-        // for x in 0..100 {
-        //     for y in 0..100 {
-        //         if x % 2 == 1 {
-        //             if y % 2 == 0 {
-        //                 self.sprite.target_mut().x = x as f32 * self.sprite.target().width;
-        //                 self.sprite.target_mut().y = y as f32 * self.sprite.target().height;
-        //                 self.batch.draw_sprite(&self.sprite);
-        //             } else {
-        //                 self.sprite0.target_mut().x = x as f32 * self.sprite0.target().width;
-        //                 self.sprite0.target_mut().y = y as f32 * self.sprite0.target().height;
-        //                 self.batch.draw_sprite(&self.sprite0);
-        //             }
-        //         } else {
-        //             if y % 2 == 0 {
-        //                 self.sprite0.target_mut().x = x as f32 * self.sprite0.target().width;
-        //                 self.sprite0.target_mut().y = y as f32 * self.sprite0.target().height;
-        //                 self.batch.draw_sprite(&self.sprite0);
-        //             } else {
-        //                 self.sprite.target_mut().x = x as f32 * self.sprite.target().width;
-        //                 self.sprite.target_mut().y = y as f32 * self.sprite.target().height;
-        //                 self.batch.draw_sprite(&self.sprite);
-        //             }
-        //         }
+        // for (index, sprite) in self.sprites.iter_mut().enumerate() {
+        //     for i in 0..2 {
+        //         sprite.target_mut().x = (index + i) as f32 * sprite.target().width;
+        //         sprite.target_mut().y = index as f32 * sprite.target().height;
+        //         self.batch.draw_sprite(sprite);
         //     }
         // }
+
+        #[allow(clippy::all)]
+        for x in 0..100 {
+            for y in 0..100 {
+                if x % 2 == 1 {
+                    if y % 2 == 0 {
+                        self.sprite.target_mut().x = x as f32 * self.sprite.target().width;
+                        self.sprite.target_mut().y = y as f32 * self.sprite.target().height;
+                        self.batch.draw_sprite(&self.sprite);
+                    } else {
+                        self.sprite0.target_mut().x = x as f32 * self.sprite0.target().width;
+                        self.sprite0.target_mut().y = y as f32 * self.sprite0.target().height;
+                        self.batch.draw_sprite(&self.sprite0);
+                    }
+                } else {
+                    if y % 2 == 0 {
+                        self.sprite0.target_mut().x = x as f32 * self.sprite0.target().width;
+                        self.sprite0.target_mut().y = y as f32 * self.sprite0.target().height;
+                        self.batch.draw_sprite(&self.sprite0);
+                    } else {
+                        self.sprite.target_mut().x = x as f32 * self.sprite.target().width;
+                        self.sprite.target_mut().y = y as f32 * self.sprite.target().height;
+                        self.batch.draw_sprite(&self.sprite);
+                    }
+                }
+            }
+        }
 
         self.batch.end().unwrap();
     }
