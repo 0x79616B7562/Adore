@@ -1,10 +1,5 @@
 #![allow(dead_code)]
 
-pub use memoffset::{
-    offset_of,
-    span_of,
-};
-
 mod cast;
 mod color;
 mod delta;
